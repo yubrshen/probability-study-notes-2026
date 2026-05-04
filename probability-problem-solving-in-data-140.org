@@ -1,0 +1,673 @@
+:PROPERTIES:
+:ID:       29a0c199-1e35-4fa3-ab0f-40592c647524
+:END:
+#+SETUPFILE: ~/notes-in-org/templates/tufte-book-landscape-improved.setup
+#+title: Probability Problem Solving in Data 140
+#+author: Yu Shen
+#+date: 2026-04-19
+
+Here are summaries of the core problem-solving methods from Data 140, explained with examples.
+
+* Modeling (Construction/Deconstruction) of Randon Variable Distribution
+Modeling is understanding. Modeling of random distribution is tell what a
+distribution is in terms of the available understandings.
+In this regard, modeling may also be called expression, expressing concept A in
+terms other concepts that have been understood, or better understood.
+
+One of the often powerful expression is linear combination.
+
+** Randomness Characterizations
+(We can't know everything of a randam variable's distribution, then we try to
+get some partial understanding of random distributions, as much as possible.)
+
+- Mean :: the weighted average of all possible values
+  with the weights being the possibilities of the corresponding values. Showing
+  the "center" of the value. {{{mn(\(E\left[X-E[X]\right]=0\))}}}
+- Variance :: Variance measures the "spread" of a random variable around its
+  mean ("center").
+  Mathematically, it is the expected squared deviation from the mean:
+  {{{mn(\(Var(X) = E[(X - E[X])^2]\))}}}
+  (Why squared? indifferent to sign, want it to be non-negative)
+  (Why not use other operation to get non-negative? e.g. absolute value
+  \(|X-E[X]|\)?
+  We want the transformation/operation to be continous, to be possible
+  derivation, for example, for finding the maximum/minium of the variance
+  )
+   {{{mn(\(Var(X) = E(X^2) - (E[X])^2\) \\ Simplification )}}}
+   (mathematically interesting:
+   the difference between
+   the mean of the square of $X$ and
+   the square of the mean of $X$)
+- Standard deviation :: the square root of the variance
+  {{{mn($SD = \sqrt(Var(X))$)}}}
+  (Why perform square root operation on the variance?
+   to be more comparable to the random variable's values, and its mean.
+  )
+- Co-Variance ::
+- MGF ::
+
+** Building blocks
+*** Bernoulli distribution ($p$ probablity of success)
+$P(X=k)$, $k \in \{1, 0\}$, $P(X=1)=p$, then $P(X=0)=1-p$, called $q$
+- The simplest randonm distribution:
+  - Only two outcomes (as one outcome wouldn't be random!)
+- Express, relate between the outcome of 1 and 0, p to q.
+- Mean: $E(X)$ : the average of all possible values. Only two
+  possibilities, 1, 0, then the average of them: $1\times p + 0 \times (1-p)$ this
+  evaluates to $p$
+  {{{mn(Bernoulli $E[X] = p$)}}}
+- Variance:
+  $Var(X) = E(X^2) - (E[X])^2 = E(X^2) - p^2$ by simplified calculation
+
+  Need to figure out $E(X^2)$
+  (we know $E(X)$ does not automatically
+  implies that we know $E(X^2)$, it definitiely $E(X^2) \ne E(X)^2$)
+
+  When there is no better means.
+  Try the brutal force of calculating from the definition:
+
+  $E(X^2) = \sum_{all\ possible\ values\ of\ X^2}p_{X^2}X^2$
+  where $p_{X^2}$
+  is the probability of a new random variable $Y$, $P(Y=X^2)$
+  as $X^2$ is a (1-to-1) function, thus  $p_{X^2} = P(Y=k^2) = P(X=k) = p$
+  therefore, $E(X^2) = p1^2 + (1-p)0^2=p$
+  {{{mn($Bernoulli: E(X^2) = p$)}}}
+  therefore,  $Var(X) = E(X^2) - p^2 = p - p^2 = p(1-p) = pq$
+  {{{mn(Bernoulli: $Var(X)=pq$)}}}
+
+
+** Using better known distribution as building blocks to study other distributions
+The most classic example in Data 140 is the Binomial distribution, which is constructed entirely from Bernoulli trials.
+
+*** Building the Binomial Distribution
+A Binomial (\(n, p\)), \(n\)
+Bernoulli ($p$) trials. (Repeated Bernoulli experiements)
+
+   The Component: Each trial $X_i$ is a Bernoulli random variable where $X_i = 1$ (success) or $X_i = 0$ (failure).
+   The Construction: By adding them together
+
+{{{mn(Binomial: $S_n = \sum_{i=1}^{n} X_i$)}}}
+{{{mn($X_i$ Bernoulli i.i.d.)}}}
+
+   you create a new distribution that counts the total number of successes in those $n$ trials.
+   Why this works: This "building block" approach allows you to derive the
+   properties of the Binomial distribution directly from the simpler Bernoulli
+   trial.
+   For instance, because expectation is linear,
+   the mean of the Binomial is simply $n \times E[X] = np$.
+   {{{mn(Binomial \(E[X] = np\))}}}
+
+   The Probability Mass (Density) Function (PMF) of binomial:
+--
+To derive the **Probability Mass Function (PMF)** for the Binomial($n, p$)
+distribution,
+we view it as a sequence of $n$ independent Bernoulli trials.
+
+**** **1. Probability of a Single Specific Sequence**
+Imagine a specific sequence of $n$ trials that results in exactly $k$ successes
+and
+$n-k$ failures (e.g., $S, S, F, \dots$).
+Because the trials are independent, we multiply their individual probabilities:
+   The $k$ successes each have probability $p$, resulting in $p^k$.
+   The $n-k$ failures each have probability $q = (1-p)$, resulting in $(1-p)^{n-k}$.
+   The probability of that one specific sequence is **$p^k(1-p)^{n-k}$**.
+
+**** **2. Counting All Possible Sequences**
+There are many different sequences that can result in $k$ successes.
+The number of ways to choose exactly $k$ positions for successes out of $n$ available trials is given by the binomial coefficient:
+**$$\binom{n}{k} = \frac{n!}{k!(n-k)!}$$**
+
+**** **3. The Final Density (PMF)**
+Since each of these $\binom{n}{k}$ sequences is mutually exclusive and has the same probability, we sum them to get the final formula:
+**$$P(X=k) = \binom{n}{k} p^k (1-p)^{n-k} \text{ for } k = 0, 1, \dots, n$$**.
+{{{mn(Binomial: \(P(X=k) = \binom{n}{k} p^k (1-p)^{n-k} \))}}}
+{{{mn(for \( k = 0\, 1\, \dots\, n\) )}}}
+{{{mn($\binom{n}{k} = \frac{n!}{k!(n-k)!}$)}}}
+*** Building Geometric Distribution
+You can also use Bernoulli trials to define "waiting time" distributions:
+The number of Bernoulli trials needed to get the first success.
+\(P(X=k) = p(1-p)^{(k-1)} \) where $p$ is the probability of success.
+{{{mn(Geometric distribution ($p$): X \(P(X=k) = p(1-p)^{(k-1)} \))}}}
+
+*** Building Negative Binomial Distribution
+The number of Bernoulli trials needed to reach a fixed number of successes.
+
+To derive the Probability Mass Function (PMF) for the negative binomial distribution,
+we define the random variable $X$ as the total number of trials needed to
+achieve a fixed number of successes, $r$.
+
+**** 1. The Logical Requirement
+For the \(r\)-th success to occur exactly on total trial $k$, two conditions must be met:
+1.  In the first $k-1$ trials, there must be exactly $r-1$ successes.
+2.  The \(k\)-th trial must be a success.
+
+**** 2. Probability of the First $k-1$ Trials
+So the first part follows a Binomial distribution. We need to choose $r-1$ positions for successes out of $k-1$ available trials:
+   Ways to arrange: $\binom{k-1}{r-1}$
+   Probability of $r-1$ successes: $p^{r-1}$
+   Probability of $(k-1) - (r-1) = k-r$ failures: $(1-p)^{k-r}$.
+
+This gives us: $\binom{k-1}{r-1} p^{r-1} (1-p)^{k-r}$.
+
+**** 3. The Final Trial
+The \(k\)-th trial must be a success, which has probability $p$.
+Since the trials are independent, we multiply this by our previous result:
+$$P(X=k) = \left[\binom{k-1}{r-1} p^{r-1} (1-p)^{k-r}\right] \times p$$
+$$P(X=k) = \binom{k-1}{r-1} p^r (1-p)^{k-r} \text{ for } k = r, r+1, \dots$$.
+{{{mn(Negative Binomial: $X$)}}}
+{{{mn($P(X=k)=$)}}}
+{{{mn($\binom{k-1}{r-1} p^r (1-p)^{k-r}$)}}}
+{{{mn(for $k = r\, r+1\, \dots$)}}}
+{{{mn($k$: the number of total trials)}}}
+
+**** Alternative Parameterization
+In some contexts, the distribution is defined by the number of failures
+($k$) observed before the \(r\)-th success. In that case, the total trials are $r+k$, and the PMF is written as:
+$$P(X=k) = \binom{n+k-1}{k} p^r (1-p)^k$$.
+{{{mn(Two formulations of negative binomial (geometric):)}}}
+{{{mn(1. ($k$: total number of trials to achieve fixed number $r$ success))}}}
+{{{mn(2. ($k$: number of failures to achieve fixed number $r$ success))}}}
+{{{mn(geometric: is negative binomial with $r=1$ constant omitted)}}}
+
+**** Why it is Negative Binomial?
+The Negative Binomial distribution is named that way primarily because it
+answers the "inverse" or "negative" version of the question posed by the Binomial distribution.
+
+Here are the two main reasons for the name:
+
+1.  Inverse Random Variables: In a Binomial distribution, you
+   fix the number of trials and count the random number of successes.
+   In a Negative Binomial distribution, you do the opposite: you
+   fix the number of successes you want to achieve and count the random number of trials it takes to get there.
+
+| Distribution      | Fixed Quantity       | Random Variable        | Interpretation                                        | Relationships           |
+|-------------------+----------------------+------------------------+-------------------------------------------------------+-------------------------|
+| Binomial          | # of trials ($n$)    | # of successes ($k$)   | Count successes in a fixed # of trials                | $n \ge k$               |
+| Negative Binomial | # of successes ($r$) | # of trials ($k$)      | Count trials needed to reach a fixed # of successes   | $k \ge r$               |
+| Negative Binomial | # of successes ($r$) | or # of failures ($k$) | Count failures needed to reach a fixed # of successes | $k + r=$  total trials   |
+
+ Both distributions assume independent Bernoulli trials with constant $p$
+
+ Practical modeling insight
+
+ Use Binomial when your experiment budget is fixed.
+ Use Negative Binomial when your stopping condition is success-based (common in reliability testing, queuing, and retry systems).
+
+If you want, I can map this to likelihood functions and show how they differ in inference workflows.
+
+*** Negative Binomial degenerates (collapses) to Geometric distribution
+
+To show that the Geometric distribution is a special case of the Negative Binomial distribution, we simply set the required number of successes ($r$) to 1 in the Probability Mass Function (PMF).
+
+***** The Mathematical Substitution
+1.  Negative Binomial PMF: This distribution models the number of trials ($k$) to get $r$ successes:
+    $$P(X=k) = \binom{k-1}{r-1} p^r (1-p)^{k-r}$$
+2.  Set $r = 1$:
+    $$P(X=k) = \binom{k-1}{1-1} p^1 (1-p)^{k-1}$$
+3.  Simplify:
+    *   $\binom{k-1}{0} = 1$ (There is only one way to have the first success on the $k$-th trial: $k-1$ failures followed by one success).
+    *   Result: $P(X=k) = p(1-p)^{k-1}$.
+
+This final expression is exactly the PMF for the Geometric distribution, defined as the number of trials until the first success.
+
+***** Conceptual Link
+   - Negative Binomial: "How many trials until I get $r$ successes?".
+   - Geometric: "How many trials until I get the first success?".
+
+When $r=1$, the questions are identical.
+
+*** Law of Small Numbers: Poisson as approximation of the Binomial distribution
+"rare events" where the number of trials ($n$) is large
+and the probability of success ($p$) is very small,
+such that $np$ converges to a constant $\lambda$.
+{{{mn(Rare event of Binomial $X$: $\lim_{n \to \infty p \to 0} np = \lambda$)}}}
+{{{mn(for Binomial $(n\, p)$ $X$ $E[X]=np$)}}}
+
+{{{mn(for Binomial $X_n$ $\lim_{n \to \infty} P(X_n = k) = \frac{\lambda^k e^{-\lambda}}{k!}$)}}}
+
+Detail deveolpment:
+The **Law of Small Numbers** describes how the
+Binomial distribution converges to the Poisson distribution
+when the number of trials $n$ is very large and the probability of
+success $p$ is very small,
+such that their product $np = \lambda$ remains constant.
+
+**** **Mathematical Derivation**
+To derive this, we start with a variable
+$X_n \sim \text{Binomial}(n,
+\lambda/n)$ and
+take the limit as $n \to \infty$:
+
+1.  Set up the Binomial PMF:
+    $$P(X_n = k) = \frac{n(n-1)\dots(n-k+1)}{k!} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n-k}$$
+
+2.  Rearrange the terms:
+    $$P(X_n = k) = \frac{\lambda^k}{k!} \left[ \frac{n}{n} \cdot \frac{n-1}{n} \dots \frac{n-k+1}{n} \right] \left(1 - \frac{\lambda}{n}\right)^n \left(1 - \frac{\lambda}{n}\right)^{-k}$$
+
+3.  Evaluate the limits as $n \to \infty$:
+    *   The product in the brackets $[\frac{n}{n} \cdot \frac{n-1}{n} \dots \frac{n-k+1}{n}]$ consists of $k$ terms that each approach 1.
+    *   The term $(1 - \frac{\lambda}{n})^n$ approaches $e^{-\lambda}$.
+    *   The term $(1 - \frac{\lambda}{n})^{-k}$ approaches 1 because $k$ is a fixed constant while $n$ grows.
+
+4.  Final Result:
+    By combining these limits, we arrive at the Poisson PMF:
+    $$\lim_{n \to \infty} P(X_n = k) = \frac{\lambda^k e^{-\lambda}}{k!}$$
+
+This approximation is considered accurate in practice when $n$ is large and the average $\lambda$ is relatively small.
+
+**** Poisson Distribution Definition
+A random variable $X$ follows a Poisson ($\lambda$) distribution if its Probability Mass Function (PMF) is:
+$$P(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}, \text{ for } k = 0, 1, 2, \dots$$
+where $\lambda > 0$ is the average rate of occurrence.
+{{{mn(Poison $X$: $P(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}$)}}}
+{{{mn(for $k = 0\, 1\, 2\, \dots$)}}}
+{{{mn( $\lambda > 0$ the avergae rate of occurrence)}}}
+
+The Poisson distribution was developed as a mathematical limit of the **Binomial distribution**, discovered by Siméon Denis Poisson in 1837.
+
+***** **The Core Intuition: "The Law of Small Numbers"**
+The primary intuition source is the study of **rare events** occurring within a large number of independent trials.
+   **The Limit:** If you have a sequence of trials ($n$) that goes to infinity while the probability of success ($p$) goes to zero, but their product ($np = \lambda$) stays constant, the distribution converges to Poisson.
+   **The "Building Block":** It essentially treats a continuous region of time or space as being divided into many tiny "bins" where a "success" (an event) is extremely unlikely in any single bin.
+{{{mn(Poisson: rare events of arrival to some "bins" over (long) time or space with average
+rate of $\lambda$)}}}
+***** **Historical Real-World Sources**
+The distribution became famous through observations of phenomena that fit this "rare event" model perfectly:
+   **Radioactivity:** Counting the clicks on a Geiger counter over time.
+   **Military Data:** The number of Prussian soldiers killed by horse kicks annually across different army corps.
+   **Wartime Clustering:** The hits from Nazi V1 "Buzz Bombs" in London during WWII, where the city was divided into small sectors to see if the bombs were clustering or falling randomly.
+
+***** **Key Logical Assumptions**
+For this intuition to hold, four things must be true:
+1.  **Independence:** One event does not affect the likelihood of another.
+2.  **Constant Rate:** Events occur at a steady average frequency ($\lambda$).
+3.  **Proportionality:** The number of events is proportional to the size of the interval.
+4.  **Non-Simultaneity:** Two events cannot happen at the exact same instant or location.
+
+*** Logarithmic Series distribution (not required in Data 140)
+# Low priority, double check if it's in the Data 140
+The Logarithmic Series distribution is a discrete probability distribution used to
+model counts where the value zero is not possible, meaning its support is $k = 1, 2, 3, \dots$.
+# What is the meaning of "support", in meaning its support is $k = 1, 2, 3,
+# \dots$ above
+
+**** Probability Mass Function (PMF)
+As a member of the **power series family**, its PMF is defined by the parameter $\theta$ ($0 < \theta < 1$):
+$$P(X=k) = \frac{\theta^k}{-k \ln(1-\theta)}$$
+In this structure, the "coefficient" is $a(k) = 1/k$ and the "series function" is $f(\theta) = -\ln(1-\theta)$.
+
+**** Meaning and Intuition
+- Species Abundance: It is most famous for modeling biological diversity, such as the number of individual insects found for each species in a collection.
+- Zero-Truncated Limit: Intuitively, you can think of it as the limiting form of a Negative Binomial distribution that has been "zero-truncated" (the $k=0$ case is removed).
+- Long-Tailed Behavior: It is a "long-tailed" distribution, meaning it can model scenarios where most categories have very few members, but a few rare categories have very high counts.
+
+**** Visual Diagnosis
+In an Ord Plot, the Logarithmic Series is identified by a positive slope ($b > 0$) and a negative intercept ($a < 0$).
+
+*** Power series family
+
+The **power series family** is a broad group of discrete probability distributions where
+the probability of a value $k$ is defined by the formula
+$P(X=k) = \frac{a(k)\theta^k}{f(\theta)}$.
+{{{mn(Power series family:)}}}
+{{{mn($P(X=k) = \frac{a(k)\theta^k}{f(\theta)}$ \, $\theta > 0$)}}}
+
+In this structure, $\theta$ is a positive parameter,
+$a(k)$ is a coefficient function of $k$, and
+$f(\theta)$ is the "series function" that
+ensures the probabilities sum to one.
+
+**** Log-Ratio of Power Series Distributions
+Given $P(X=k) = \frac{a(k)\theta^k}{f(\theta)}$, then
+$R(k)=\frac{P(k)}{P(k-1)} = \frac{a(k)}{a(k-1)} \theta$ siginificantly simplified!
+{{{mn(ratio of consecutive probabilities:)}}}
+{{{mn($\frac{P(k)}{P(k-1)} = \frac{a(k)}{a(k-1)} \theta$)}}}
+
+**** Components of Power Seriesu Distributions
+
+| Distribution                                                              | $P(X=k)$                            | Coefficient ($a(k)$) | Parameter ($\theta$) | Series Function ($f(\theta)$)                |
+| Poisson ($k$: # of successes out of infinity)                             | $\frac{e^{-\lambda} \lambda^k}{k!}$ | $1/k!$               | $\lambda$            | $e^{\theta}$                                 |
+| Binomial ($k$: # of successes of $n$ trials)                              | $\binom{n}{k} p^k (1-p)^{n-k}$      | $\binom{n}{k}$       | $p/(1-p)$            | $(1+\theta)^n$                               |
+| Negative Binomial ($k$: total # of trials to achieve fixed # $r$ success) | $\binom{k-1}{r-1} p^r (1-p)^{k-r}$  | $\binom{k-1}{r-1}$   | $1-p$                | $\left(\frac{\theta}{(1-\theta)}\right)^{r}$ |
+| Negative Binomial ($k$: # of failures to achieve fixed # $r$ success)     | $\binom{r+k-1}{r-1} p^r (1-p)^{k}$  | $\binom{r+k-1}{r-1}$ | $1-p$                | $(1-\theta)^{-r}$                            |
+| Geometric ($k$: # of total trials till success)                           | $p(1-p)^{(k-1)}$                    | $1$                  | $1-p$                | $\frac{\theta}{(1-\theta)}$                  |
+| Geometric ($k$: # of failures till success)                               | $p(1-p)^{(k)}$                      | $1$                  | $1-p$                | $(1-\theta)^{-1}$                            |
+| Logarithmic Series                                                        | $\frac{\theta^k}{-k \ln(1-\theta)}$ | $1/k$                | $\theta$             | $-\ln(1-\theta)$                             |
+
+More compontes of the power series distributions:
+
+| Distribution                                                              | $R(k)=\frac{P(k)}{P(k-1)} = \frac{a(k)}{a(k-1)} \theta$ | Linear Recurrence $k R(k) = ak + b$                   |
+| Poisson ($k$: # of successes out of infinity)                             | $\frac{\theta}{k} = \frac{\lambda}{k}$                  | $\lambda = 0k + \lambda$                              |
+| Binomial ($k$: # of successes of $n$ trials)                              | $R(k) = \frac{n-k+1}{k} \cdot \frac{p}{1-p}$            | $\left( \frac{-p}{1-p} \right)k + \frac{p(n+1)}{1-p}$ |
+| Negative Binomial ($k$: total # of trials to achieve fixed # $r$ success) | $\frac{k-1}{k-r}(1-p)$                                  | (hard to convert to $ak + b$ form,                    |
+|                                                                           | or let $k'=k-r$, $R(k')=\frac{k'+r-1}{k'} (1-p)$        | use the equivalent with $k$ as # of failures)         |
+|                                                                           | In fact, $k'$ is just the # of failures!                | $(1-p)k' + (r-1)(1-p)$                                |
+| Negative Binomial ($k$: # of failures to achieve fixed # $r$ success)     | $R(k) = \frac{k+r-1}{k} \cdot (1-p)$                    | $(1-p)k + (r-1)(1-p)$                                 |
+| Geometric ($k$: # of total trials till success)                           | $\theta = 1-p$                                          | $(1-p)k$                                              |
+| Geometric ($k$: # of failures till success)                               | $\theta = 1-p$                                          | $(1-p)k$                                              |
+| Logarithmic Series                                                        | $\frac{k-1}{k} \theta$                                  | $\theta k -\theta$                                    |
+
+**** identifying the components of a power series distribution $P(X=k) = \frac{a(k)\theta^k}{f(\theta)}$:
+***** Overall receipt:
+1. Identify $a(k)$: Isolate the coefficient function that depends on $k$ but is not part of the term with $k$ as an exponent.
+2. Identify $\theta^k$: Group all terms where $k$ is the power; the base of this expression is your parameter $\theta$.
+3. Determine $f(\theta)$: The remaining terms (which do not depend on $k$)
+   represent $\frac{1}{f(\theta)}$.
+   Take their reciprocal to find the series function $f(\theta)$.
+***** Poisson
+In $P(X=k) = \frac{e^{-\lambda} \lambda^k}{k!}$:
+1. $a(k) = 1/k!$ leaving $e^{-\lambda} \lambda^k$
+2. $\theta = \lambda$ leaving $e^{-\lambda}$
+3. $1/f(\theta) = e^{-\lambda} \Rightarrow f(\theta) = e^\theta$.
+
+***** Binomial
+
+In $\binom{n}{k} p^k (1-p)^{n-k}$
+1. $a(k) = \binom{n}{k}$ leaving $p^k (1-p)^{n-k}$ rearranging
+   $p^k (1-p)^{n-k} = \left[\frac{p}{1-p} \right]^k (1-p)^n$
+2. $\theta = \frac{p}{1-p}$ leaving $(1-p)^n$
+3. $1/f(\theta) = (1-p)^n$ needing to express $1-p$ in terms of $\theta = \frac{p}{1-p}$
+
+{{{mn(tricks: with $\theta = \frac{p}{1-p}$)}}}
+{{{mn(use $p + (1-p) = 1$)}}}
+{{{mn(to get $\frac{p}{1-p} + 1 = \frac{1}{1-p}$)}}}
+{{{mn($\theta + 1 = \frac{1}{1-p}$)}}}
+
+Trying to construct relationship between $1-p$ and $\theta$.
+
+We have $p + (1-p) = 1$
+creating the appearance of $\theta$ in the equation, by deviding $1-p$ at the
+both side of the above equation, resulting another equation:
+$$
+\frac{p}{1-p} + 1 = \frac{1}{1-p}
+$$
+thus we have $\theta + 1 = \frac{1}{1-p}$
+therefore, we have $1-p = \frac{1}{\theta + 1}$
+
+thus $$1/f(\theta) = (1-p)^n = \frac{1}{(\theta + 1)^{n}}$$
+Conclusion: $f(\theta) = (\theta + 1)^{n}$
+
+***** Negative binomial
+
+In $\binom{k-1}{r-1} p^r (1-p)^{k-r}$ ($k$: total # of trials to achieve fixed # $r$ success)
+1. $a(k) = \binom{k-1}{r-1}$ leaving $p^r (1-p)^{k-r}$ rearranging
+   $p^r (1-p)^{k-r} = (1-p)^{k} p^{r} (1-p)^{-r} = (1-p)^{k} {\left(\frac{p}{1-p}\right)}^{r}$
+2. $\theta = 1-p$ leaving ${\left(\frac{p}{1-p}\right)}^{r} = {\left(\frac{1-\theta}{\theta}\right)}^{r}$
+3. $1/f(\theta) = {\left(\frac{1-\theta}{\theta}\right)}^{r}$ therefore
+   $f(\theta) = {\left(\frac{\theta}{1-\theta}\right)}^{r}$
+
+In $\binom{r+k-1}{r-1} p^r (1-p)^{k}$ ($k$: # of failures to achieve fixed # $r$ success)
+1. $a(k) = \binom{r+k-1}{r-1}$ leaving $p^r (1-p)^{k}$
+2. $\theta = 1-p$ leaving $p^r$ as $p = 1-\theta$
+3. $1/f(\theta) = (1-\theta)^{r}$ therefore
+   $f(\theta) = (1-\theta)^{-r}$
+
+***** Geometric
+
+For $k$ to be the number of trials to get a success $k=1, 2, \dots$
+In $p(1-p)^{(k-1)}$
+1. $a(k) = 1$ remaining $p(1-p)^{(k-1)}$
+2. $\theta = 1-p$ remaining $p(1-p)^{-1}$
+3. $\frac{1}{f(\theta)} = p(1-p)^{-1}$ expressing $p = 1-\theta$, then
+   $p(1-p)^{-1} = \frac{(1-\theta)}{\theta}$ therefore, $f(\theta)=\frac{\theta}{(1-\theta)}$
+
+For $k$ to be the number of failurs before a success $k=0, 1, 2, \dots$
+In $p(1-p)^{(k)}$
+1. $a(k) = 1$ remaining $p(1-p)^{(k)}$
+2. $\theta = 1-p$ remaining $p$
+3. $\frac{1}{f(\theta)} = p$ expressing $p = 1-\theta$, then
+    therefore, $f(\theta)=(1-\theta)^{-1}$
+
+***** Logarithmic Series
+
+In $\frac{\theta^k}{-k \ln(1-\theta)}$
+1. $a(k) = \frac{1}{k}$ leaving $\frac{\theta^k}{-\ln(1-\theta)}$
+2. $\theta = \theta$ leaving $\frac{1}{-\ln(1-\theta)}$
+3. $\frac{1}{f(\theta)} = \frac{1}{-\ln(1-\theta)}$ therefore, $f(\theta) = -\ln(1-\theta)$
+**** Application of Power Series Distributions
+The power series relationships are particularly useful because they allow us to linearize the probability mass function for graphical diagnosis.
+
+A fundamental property of this family is that the log-ratios of consecutive
+probabilities follow a linear relationship when plotted against $k$.
+This makes the family particularly easy to identify using diagnostic tools like
+Ord plots or Poissonness plots,
+where the slope and intercept determine which specific distribution fits the data.
+
+The idea of linearizing the probability mass function (PMF) through log-ratios
+is a powerful diagnostic tool because it transforms complex,
+non-linear relationships (involving powers and factorials) into a simple straight line for visual inspection.
+
+***** 1. Why use Log-Ratios?
+For members of the power series family, the PMF is defined as $P(X=k) =
+\frac{a(k)\theta^k}{f(\theta)}$.
+When you take the ratio of consecutive probabilities, $\frac{P(k)}{P(k-1)}$, the
+common "series function" $f(\theta)$ cancels out,
+simplifying the expression significantly. Taking the logarithm then linearizes the parameters,
+often isolating the parameter $\theta$ as a linear component.
+
+***** 2. Diagnostic Tools
+   Ord Plot: This tool plots the relationship $k \frac{P(k)}{P(k-1)} = ak + b$.
+   If the resulting plot is linear, the data belong to the Katz family.
+   The specific distribution is identified by the signs of the slope ($a$) and intercept ($b$):
+    *   Poisson: Slope is zero.
+    *   Binomial: Slope is negative.
+    *   Negative Binomial: Slope is positive and intercept is positive.
+    *   Logarithmic Series: Slope is positive and intercept is negative.
+   Poissonness Plot: This more robust method uses a "count metameter"—a log-transformation of observed frequencies, $k!$, and sample size—designed to produce a straight line specifically if the data follow a Poisson distribution.
+
+***** 3. Mathematical Intuition
+Linearization allows you to move from histograms, which can be hard to compare visually against curvilinear models, to a horizontal or linear reference. In a leveled plot, for instance, you can judge deviations from a horizontal line at zero, making it much easier to spot outliers or lack of fit.
+
+NEXT:
+*** "Family Tree" of Distributions
+
+#+BEGIN_SRC plantuml :file ~/tmp/distribution-tree.png
+@startuml
+skinparam componentStyle rectangle
+
+package "Simple Building Blocks" as blocks {
+  rectangle "Bernoulli distribution \nwith two outcomes\n<latex>(p)</latex> success rate" as bernoulli
+}
+
+  rectangle "Binomial <latex>(n, p)</latex>" as binomial
+  rectangle "Geometric Distribution <latex>(p)</latex>" as geometric
+  rectangle "Negative Binomial <latex>(r, p)</latex>" as negative_binomial
+  rectangle "Poison <latex> \lambda </latex>" as poison
+bernoulli --> binomial           : number of successes\nin repeated experiments
+bernoulli --> geometric          : number of experiments required\nto reach first success
+bernoulli --> negative_binomial  : number of experiments required\nto reach fixed number of successes
+negative_binomial -> geometric   : <latex> r = 1 </latex>
+binomial --> poison              : <latex> \lim_{n \to \infty \, p \to 0} np = \lambda </latex>
+@enduml
+#+END_SRC
+
+#+RESULTS:
+[[file:~/tmp/distribution-tree.png]]
+
+* Foundational Probability Calculations
+** Start from definitions
+Perform reasoning and calculation definitions.
+This is often is the more straightforward approach that we don't use enough.
+
+For example, the calculation of $E(X^2)$ where $X$ is Bernoulli
+
+  $E(X^2) = \sum_{all\ possible\ values\ of\ X^2} p_{X^2} X^2$
+
+** Function application to random variable
+$P(X=k) = P(f(X)=f(x))$
+When you apply a 1-to-1 (injective) function $f$ to a discrete random variable $X$,
+the probability of the new variable $Y = f(X)$ taking the value $f(k)$ is identical to the probability of $X$ taking the value $k$.
+
+*** Why this works
+Because the mapping is 1-to-1, the event
+$\{X = k\}$ is logically equivalent to the event
+$\{f(X) = f(k)\}$.
+Since they represent the same set of outcomes in the sample space,
+they must have the same probability:
+$$P(X = k) = P(f(X) = f(k))$$
+
+*** Examples from our discussion
+**** Squaring a Bernoulli:
+We previously saw that for a Bernoulli variable $X \in \{0, 1\}$,
+applying $f(X) = X^2$ is a 1-to-1 mapping on its domain.
+Therefore, $P(X^2=1) = P(X=1) = p$ and $P(X^2=0) = P(X=0) = 1-p$
+**** Monotone Transformations:
+In Data 140, we often use monotone functions (which are always 1-to-1) to
+transform variables.
+a function is not 1-to-1
+($f(X) = X^2$ for a variable that can be both positive and negative)
+and how that changes the probability?
+For example, if $X \in \{-1, 0, 1\}$, then $f(X) \in \{0, 1\}$
+(3 elements in input domain to 2 elements in the outputs, both 1 and -1 mapped
+to 1, that is, the probabily of $P(f(x)=1) = P(X=-1) + P(X=1)$)
+
+** Linearity of Expectations:
+   The expected value of a sum is the sum of the individual expectations,
+   regardless of whether the variables are independent.
+
+$$E\left[\sum_{i=1}^{n} \lambda_iX_i\right] = \sum_{i=1}^{n}  \lambda_iE[X_i]$$
+
+*** Applicaiton Example: Why is $Var(X) = E(X^2) - (E[X])^2$ ?
+By definition: $Var(X) = E\left[(X - E[X])^2\right]$
+
+By algebra expression (to figure out how to compute $(X - E[X])^2$ first, by
+$(a+b)^2=(a-b)(a-b)=a^2 -2ab -b^2$)
+$(X - E[X])^2 = X^2 - 2XE[X] + {E[X]}^2$
+
+By linearity of expectation:
+$E\left[X^2 - 2XE[X] + {E[X]}^2\right]=E[X^2] - E\left[2XE[X]\right] + E\left[{E[X]}^2\right]$
+For mean with respect to $X$, both $E[X]$ are constants, and $E[constant]=constant$
+therefore $E\left[{E[X]}^2\right]=E[X]^2$ and
+$E\left[2XE[X]\right] = (2E[X])E[X]=2E[X]^2$
+
+By algeric substitution (replacing the equal value terms with simpler forms):
+$E\left[X^2 - 2XE[X] + {E[X]}^2\right]=E[X^2] - 2E[X]^2 + 2E[X]^2=E[X^2] - E[X]^2$
+
+*** Applicaiton Example: The mean of a Binomial($n, p$) distribution is $np$ because it is the sum of $n$ Bernoulli($p$) trials, each with mean $p$.
+*** Variance and Covariance Rules: The variance of a sum includes the sum of individual variances plus twice the covariances of all pairs.
+**** 1. Proof: Variance of a Sum
+The variance of a sum of random variables is derived from the definition of
+variance:
+$Var(X) = E[(X - E[X])^2]$
+
+For a sum $S = \sum_{i=1}^n X_i$:
+1.  Linearity of Expectation: $E[S] = \sum E[X_i]$.
+2.  Substitution:
+    $Var(S) = E\left[ \left( \sum (X_i - E[X_i]) \right)^2 \right]$ and
+    let $(X_i - E[X_i])=a_i$, then
+     $Var(S) = E\left[ \left( \sum a_i \right)^2 \right]$.
+3.  Expansion: Expanding the square of a sum $(\sum a_i)^2$ gives
+   $\sum a_i^2 + 2\sum_{i < j} a_i a_j$ (very elegant and convenient expression!),
+   thus $Var(S) = E\left[ \sum a_i^2 + 2\sum_{i < j} a_i a_j  \right]$.
+4.  Expectation of Terms:
+    *   The terms $E[(X_i - E[X_i])^2]$ are the individual variances, $\sum Var(X_i)$.
+    *   The cross-product terms $E[(X_i - E[X_i])(X_j - E[X_j])]$ are the covariances, $Cov(X_i, X_j)$.
+Result: $Var(\sum X_i) = \sum Var(X_i) + 2\sum_{i < j} Cov(X_i, X_j)$.
+
+If the variables are independent, all covariance terms are zero, simplifying the formula to $Var(\sum X_i) = \sum Var(X_i)$.
+
+** MGF for Distribution Identification: The Moment Generating Function (MGF) of the sum of independent variables is the product of their individual MGFs.
+Example: Multiplying the MGFs of two independent Poisson variables ($\mu$ and $\lambda$) results in the MGF for a Poisson($\mu+\lambda$).
+** Taylor Series Transformations: Using the expansion $e^z = \sum z^k/k!$ to simplify complex expectations into recognizable functional forms.
+Example: This was used to simplify the expectation $E[e^{tX}]$ to derive the Poisson MGF $e^{\lambda(e^t-1)}$ .
+* Variance and Co-Variance
+
+* **Optimization and Scaling**
+5.  **Log-Transformations:** Converting products into sums to simplify differentiation, which is essential for Maximum Likelihood (MLE) and MAP estimates [History].
+    *   *Example:* Taking the natural log of $x^6(1-x)^4$ to find the mode of a Beta distribution via simpler addition-based derivatives [History].
+6.  **Derivative-Based Optimization:** Setting the first derivative of a density or log-density to zero to find the parameter value that maximizes the probability [History].
+    *   *Example:* Differentiating the log-posterior $\frac{6}{x} - \frac{4}{1-x} = 0$ to find the MAP estimate of $0.6$ [History].
+7.  **Monotonic Function Application:** Since $\ln(x)$ is a monotonic increasing function, the value of $x$ that maximizes $\ln(f(x))$ is guaranteed to be the same value that maximizes $f(x)$ [History].
+    *   *Example:* This allows us to ignore complex constants in the Beta density when finding the MAP [History].
+
+* **Discrete and Bayesian Inference**
+1. **Recursive Odds Ratios:** Calculating $P(k)$ using the ratio $R(k) = \frac{P(k)}{P(k-1)}$, which avoids computationally heavy factorials for large $n$.
+   * *Example:* To find $P(36)$ in a Binomial(60, 2/3), multiply $P(35)$ by the simple ratio $\frac{61-36}{36} \cdot 2$.
+2. **Discrete Mode Identification:** Finding the peak of a histogram by identifying where the odds ratio $R(k)$ drops below 1.
+   * *Example:* The mode of a Binomial($n, p$) is the integer part of $(n+1)p$.
+3. **Conjugate Prior Updating:** Using the "Beta-Binomial" partnership to update beliefs by simply adding successes and failures to the prior parameters [22, History].
+   * *Example:* A Beta(2, 3) prior combined with 2 heads in 7 tosses instantly becomes a Beta(4, 8) posterior [History].
+4. **Order Statistics Mapping:** (Poisson Approximation)**
+  **Method:** When $n$ is very large and $p$ is very small, you can approximate Binomial probabilities using the **Poisson ($\lambda$)** distribution, where $\lambda = np$.
+  **Example:** Calculating the probability of a rare disease affecting exactly 5 people in a city of 100,000. Instead of a massive Binomial calculation, you use the Poisson PMF with $\lambda = 100,000 \cdot p$.
+
+* **15. Poissonization**
+   **Method:** A technique where you treat the total number of trials $n$ as a random variable following a Poisson distribution.
+   **Why it works:** This often "decouples" variables that are normally dependent. For example, if the number of people entering a store is Poisson, the number of men and women entering become **independent** Poisson variables.
+
+* **16. Markov Chain Steady-State Analysis**
+   **Method:** Modeling systems that transition between states where the next step depends only on the current state. You find the long-run "steady state" by solving the matrix equation $\pi P = \pi$.
+   **Example:** Predicting the long-term market share of two competing brands based on monthly customer switching probabilities.
+
+* **17. Central Limit Theorem (CLT) Approximation**
+   **Method:** For a large sample size $n$, the distribution of the sample sum (or mean) is approximately **Normal**, regardless of the original distribution's shape.
+   **Example:** Estimating the probability that the average height in a sample of 200 people is within a certain range using the $Z$-table.
+
+* **18. Beta-Binomial Probability (The "C-Constant" Formula)**
+   **Method:** Calculating the probability of $k$ successes in $n$ trials when the success probability $p$ is unknown and follows a Beta($r, s$) distribution.
+   **Formula:** $P(S_n = k) = \binom{n}{k} \frac{C(r, s)}{C(r+k, s+n-k)}$ where $C$ is the normalizing constant of the Beta density.
+
+* **19. Multiple Linear Regression (Matrix Form)**
+   **Method:** Finding the best-fit parameters $\beta$ for a model with multiple predictors using the matrix identity $\hat{\beta} = (X^T X)^{-1} X^T Y$.
+   **Example:** Predicting a house price ($Y$) based on square footage, age, and location ($X_1, X_2, X_3$) simultaneously.
+
+* Other pending topics to discuss
+** Covariance: $Cov(X_i, X_j) = E[(X_i - E[X_i])(X_j - E[X_j])]$
+
+** Unbiased Estimator:
+When working with sample data, we use the divisor $(n-1)$ in the formula $S^2 = \frac{1}{n-1}\sum_{i=1}^n(X_i - \bar{X})^2$ to ensure the estimate of $\sigma^2$ is unbiased.
+
+*** 2. Variance vs. Sample Variance
+While the proof above describes the theoretical Variance ($\sigma^2$), statisticians often work with Sample Variance ($S^2$).
+
+| Feature     | Variance ($\sigma^2$)                              | Sample Variance ($S^2$)                              |
+| :---        | :---                                               | :---                                                 |
+| Nature      | A fixed parameter of a population or distribution. | A statistic calculated from a finite sample of data. |
+| Calculation | $E[(X - \mu)^2]$                                   | $\frac{1}{n-1}\sum (X_i - \bar{X})^2$.               |
+| Goal        | Describes the true underlying spread.              | Estimates the true population variance.              |
+
+**** 3. Why use $(n-1)$? (Unbiased Estimation)
+The sample variance $S^2$ is an unbiased estimator of $\sigma^2$ because its expected value equals the true population variance: $E[S^2] = \sigma^2$.
+
+   The "Bias" Problem: Using the population mean $\mu$ would allow a divisor of $n$. However, we use the sample mean $\bar{X}$, which is already "centered" in the data. This makes the deviations $(X_i - \bar{X})$ smaller on average than $(X_i - \mu)$.
+   The Correction: Dividing by $n-1$ (Bessel's correction) perfectly compensates for this underestimation, ensuring the estimate is accurate on average.
+** Independent random variables
+Two random variables $X$ and $Y$ are mathematically **independent** if the probability of any joint outcome is simply the product of their individual probabilities.
+
+*** Mathematical Definitions
+   Discrete Variables: $X$ and $Y$ are independent if, for all possible values $x$ and $y$:
+    **$$P(X = x, Y = y) = P(X = x) \cdot P(Y = y)$$**.
+   Continuous Variables: Independence occurs when the joint probability density function (PDF) is the product of the individual marginal densities:
+    **$$f_{X,Y}(x,y) = f_X(x) \cdot f_Y(y)$$**.
+
+*** Key Properties in Data 140
+1.  **Expectation:** For independent variables, the expectation of their product equals the product of their expectations: $E[XY] = E[X]E[Y]$.
+2.  **Variance:** The variance of a sum of independent variables is simply the sum of their variances ($Var(X+Y) = Var(X) + Var(Y)$) because their **covariance is zero** [History].
+3.  **MGFs:** The Moment Generating Function of a sum of independent variables is the product of their individual MGFs: $M_{X+Y}(t) = M_X(t) \cdot M_Y(t)$ [History].
+4.  **Conditional Probability:** If $X$ and $Y$ are independent, knowing the value of $Y$ does not change the distribution of $X$: $P(X \mid Y) = P(X)$ [History].
+
+In the **Bayesian framework** we discussed, we often move from assuming trials are "independent" to viewing them as **exchangeable**, where future trials depend on the evidence gathered from previous ones [History].
+
+Would you like to see how this definition of independence is used to prove that the sum of independent **Normal** variables is also Normal?
+* Appendix: Hints of remembering the number of combinations formula
+
+\(\binom{n}{k}\)
+
+Use the following equation:
+\[ n! = \binom{n}{k} {k!(n-k)!} \]
+{{{mn(\[ n! = \binom{n}{k} {k!(n-k)!} \])}}}
+The total permualtions of \(n\) elements can be achieved by all possible
+$k$ permutations and $(n-k)$ permutations.
+* Core skills of mathematics required for probability
+** Calculus
+1. Limit operation
+2. Derivation
+3. Integral
+4. Function expression as series
+   1. Taylor series
+5. $e$
+** Linear algebra
+** Combinatory
+** Trigonometry
+
+* Would you like to see how these values are used to construct an **Ord Plot** to identify a distribution from raw data?

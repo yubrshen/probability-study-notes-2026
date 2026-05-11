@@ -599,6 +599,506 @@ binomial <--> hypergeometric : Both repeated trials in fixed <latex> $n$ </latex
 #+RESULTS:
 [[file:~/tmp/distribution-tree.png]]
 
+* Joint Distribution
+
+- Random variable in multiple dimensions (random vector)
+- Model randomness in multiple dimensions
+- The distiburtion of such "random vector"
+- For 2 dimension random variable, the probability of $(x, y)$ in a region is
+  the volume of a 3 dimension object with the region as the base, under the
+  "surface" defined by the join density function $f(x, y)$
+$$
+P((X, Y) \in A) ~ = ~ \mathop{\int \int}_A f(x,y)dydx ~~~~~ \text{for all } A
+$$
+
+{{{mn($P((X\, Y) \in A)=$)}}}
+{{{mn($\mathop{\int \int}_A f(x\,y)dydx$)}}}
+{{{mn(for all $A$)}}}
+
+** Generalized Expectation of a Functiono of the Random Vector (with more than one dimension)
+
+$$
+E(g(X, Y)) ~ = ~ \int_y \int_x g(x, y)f(x, y)dxdy
+$$
+
+The understanding of the generalized expected value of a function of random vector
+Note, for a special case of one dimension, the expectation of the random
+variable is just the expectation of the identity function.
+For 1 dimentsion, the agregation of the identify function make sense, but it
+does not for more than one dimension.
+
+** Sample of problem solving with joint densities (exercises)
+{{{mn(Keys for joint distribution exercises:)}}}
+{{{mn(Clarify on the region of the event of $X\, Y$)}}}
+{{{mn(Typcially a triangle underneath a straight line)}}}
+{{{mn(Note: two typical points of $x=0$ and $y=0$ can determine the line)}}}
+{{{mn(When performing integrals the bounds must obey the region boundaries.)}}}
+{{{mn(for marginal density\, also the boundaries apply in the integral and the
+applicable region of the marginal density)}}}
+*** The probability of students being late to lecture
+A Prob 140 student comes to lecture at a time that is uniformly distributed between 5:09 and 5:14. Independently of the student, the professor begins the lecture at a time that is uniformly distributed between 5:10 and 5:12. What is the chance that the lecture has already begun when the student arrives?
+--
+
+To solve this problem using joint densities (Chapter 17),
+you use the
+property that if two random variables are independent,
+their =joint density= is the product of their =marginal densities=.
+
+**** 1. Define the Marginals
+Let $S$ be the student's arrival time and
+$P$ be the professor's start time, measured in minutes after 5:00:
+- Student: $S \sim \text{Uniform}(9, 14)$.
+  The density is $f_S(s) = \frac{1}{14-9} = \frac{1}{5}$ for $s \in (9, 14)$.
+- Professor: $P \sim \text{Uniform}(10, 12)$.
+  The density is $f_P(p) = \frac{1}{12-10} = \frac{1}{2}$ for $p \in (10, 12)$.
+
+**** 2. Identify the Joint Density
+Because $S$ and $P$ are independent, the joint density $f(s, p)$ is:
+$$f(s, p) = f_S(s) \cdot f_P(p) = \frac{1}{5} \cdot \frac{1}{2} = \frac{1}{10}$$
+This density is constant over a rectangle with a total area of $5 \times 2 = 10$.
+
+**** 3. Calculate the Probability $P(P < S)$
+Since the density is uniform, the probability is simply
+the Area of the region where $P < S$ (The stuends' arrival time $S$ is after the
+arrival time of the professor $P$, assuming the profession starts lecture as soon as
+she arrives. "belated")
+divided by the Total Area of the possible outcomes.
+
+- Region 1 ($s$ between 10 and 12): In this $2 \times 2$ square, the line $p =
+  s$ splits it in half. The area where $p < s$ is a triangle with area
+  $\frac{1}{2}(2)(2) = 2$ (belated).
+- Region 2 ($s$ between 12 and 14): In this $2 \times 2$ rectangle, $S$ is always greater than the maximum value of $P$ (which is 12). The entire area is belated: $2 \times 2 = 4$.
+- Total belated area: $2 + 4 = 6$.
+  (See the picture in reMarkable)
+
+**** Conclusion
+$$\text{Chance} = \frac{\text{Belated Area}}{\text{Total Area}} = \frac{6}{10} = 0.6$$
+
+There is a 60% chance the lecture has already begun when the student arrives.
+
+**** Alternative: solutions with integrals
+
+To solve for the probability $P(P < S)$ using joint densities,
+we integrate the joint density function
+$f(s, p) = \frac{1}{10}$ over the region where
+$p < s$ within the possible bounds
+($9 \le s \leq 14$ and
+$10 \le p \leq 12$) [17.1, 387, 389].
+
+***** 1. Formal Integration (Professor's time first)
+The most direct formulation is to integrate $s$ with respect to $p$:
+$$P(P < S) = \int_{10}^{12} \int_{p}^{14} \frac{1}{10} \, ds \, dp$$
+(To refect the constraint that $P<S$, so the minimum of the integral of $ds$ is $p$)
+
+***** 2. Formal Integration (Student's time first)
+Because the region where $p < s$ is not a single simple rectangle relative to the student's arrival, the integral is split into two parts:
+   Part 1: Student arrives while the professor might be starting ($10 \le s \le 12$).
+   Part 2: Student arrives after the professor has definitely started ($12 \le s
+   \le 14$).
+   Note, the region where $S < P$ for ($9 \le s \le 10$) does not apply as that
+   would be $S < P$ the opposite.
+
+$$P(P < S) = \int_{10}^{12} \left( \int_{10}^{s} \frac{1}{10} \, dp \right) ds + \int_{12}^{14} \left( \int_{10}^{12} \frac{1}{10} \, dp \right) ds$$
+
+***** Calculus Breakdown
+Using the first expression:
+1.  Inner integral ($ds$): $\int_{p}^{14} \frac{1}{10} \, ds = \frac{14 - p}{10}$
+2.  Outer integral ($dp$): $\int_{10}^{12} \frac{14 - p}{10} \, dp = \left[ \frac{14p}{10} - \frac{p^2}{20} \right]_{10}^{12}$
+3.  Evaluation:
+$$\left( \frac{14(12)}{10} - \frac{12 \cdot 12}{20} \right) - \left(
+   \frac{14(10)}{10} - \frac{10 \cdot 10}{20} \right)$$
+   $$\frac{14(12)-14(10)}{10} + \frac{-12 \cdot 12 + 10 \cdot 10}{20}$$
+   $$\frac{2 \cdot 14 \cdot 2 - 12 \cdot 12 + 10 \cdot 10}{20}$$
+   $$\frac{14 \cdot 2 - 6 \cdot 12 + 5 \cdot 10}{10}$$
+   $$\frac{2 (14 - 3 \cdot 12 + 5 \cdot 5)}{10}$$
+   $$\frac{2(14 - 36 + 25}{10}$$
+   $$\frac{2(3)}{10}=\frac{6}{10}=0.6$$
+
+
+The result is 0.6, matching our geometric solution.
+
+*** JD: 2. For some constant $c$ let $X$ and $Y$ have a joint density given by
+
+$$f(x, y) ~ = ~
+\begin{cases}
+c(x - y), ~~ 0 < y < x < 1 \\
+0 ~~~~~~~~~~~~~~ \text{otherwise.}
+\end{cases}$$
+
+**** (a) Draw the region over which $f$ is positive.
+
+Your understanding is exactly correct.
+
+The region where $f(x, y)$ is positive is indeed the **lower triangle** within the unit square [17.1]. To visualize it clearly, you can think of the triangle defined by these three vertices:
+- $(0,0)$
+- $(1,0)$
+- $(1,1)$
+
+This area is bounded by the x-axis ($y=0$), the vertical line $x=1$, and the diagonal line $y=x$ [17.1].
+
+**** (b) Find $c$.
+
+***** Solution summary:
+
+1. **Inner Integral (fixed $x$):** $\int_{0}^{x} c(x - y) \, dy = c \frac{x^2}{2}$.
+2. **Outer Integral:** $\int_{0}^{1} \frac{cx^2}{2} \, dx = \frac{c}{6}$.
+3. **Normalization:** Setting $\frac{c}{6} = 1$ correctly yields **$c = 6$**.
+
+***** Detailed solution:
+Expressing the constraint $0 < y < x < 1$ as the boundaries of integral, with
+$x$ first:
+
+$$P((x, y): 0 < y < x < 1) = \int_{0}^{1} \int_{0}^{x}  c(x - y)\, dy \, dx$$
+Derivation assuming $x$ constant:
+
+$$\int_{0}^{x}  c(x - y)\, dy$$
+$$
+ \left[c(xy - \frac{y^2}{2})\right]_{0}^{x}
+$$
+
+$$
+ \left[c(xx - \frac{x^2}{2})\right] - \left[c(x0 - \frac{0^2}{2})\right]
+$$
+
+$$
+c \frac{x^2}{2}
+$$
+
+then
+$$
+\int_{0}^{1} [c \frac{x^2}{2}]\, dx
+$$
+
+$$
+\frac{c}{2} \left[\frac{x^3}{3}\right]_{0}^{1}
+$$
+$$\frac{c}{6}1 = \frac{c}{6}$$
+therefore
+$$\frac{c}{6}=1$$
+thus $c=6$
+
+**** (c) Find $P(X > Y + 0.4)$. Before you calculate, shade the event on the
+diagram you drew in (a).
+
+Here is the reasoning to find the events of $X > Y + 0.4$ within the region of
+$0 < Y < X < 1$
+The new boundary line is $X=Y+0.4$, that is $X-0.4=Y$
+Let $X'=X-0.4$ and $Y'=Y+0$, consider the coordinate translation to (X', Y'),
+in which X'=Y'. The origin of the new coordinates (X', Y') is at the (0.4, 0) of
+the old coordinates (X, Y), then the constraint of $X > Y + 0.4$ becomes $X' > Y'$
+With similiar reasoning as in (a). The region is to the right of the line of
+$X' = Y'$, a triangle with vertices of (0.4, 0), (1, 0), and (1, 0.6) (for the
+last point, with $X'=Y'=Y$, $X'= X-0.4 = 1.0 - 0.4 = 0.6$ for $X=1.0$, thus the
+Y is 0.6)
+
+Once the region (i.e. the boundaries of the events),
+using the same logic but different boundaries as in (b)
+$$P(X > Y + 0.4) = \int_{0.4}^{1} \int_{0}^{x-0.4}  c(x - y)\, dy \, dx$$
+Evaluations:
+
+$$\int_{0}^{x-0.4} c(x - y)\, dy$$
+
+$$
+ \left[c(xy - \frac{y^2}{2})\right]_{0}^{x-0.4}
+$$
+
+$$
+\left[c(x(x-0.4) - \frac{(x-0.4)^2}{2})\right]
+$$
+
+Substituting $c=6$,
+$$
+3 (x^{2} - 0.16) = 3 x^{2} - 0.48
+$$
+
+Integral with respect to $dx$:
+
+$$
+\int_{0.4}^{1} (3 x^{2} - 0.48)\, dx
+$$
+
+$$
+\left[x^3 - 0.48 x\right]_{0.4}^{1}
+$$
+
+$$
+\left[x(x^2 - 0.48)\right]_{0.4}^{1}
+$$
+
+$$
+\left[1(1^2 - 0.48)\right] - \left[0.4(0.4^2 - 0.48)\right]
+$$
+
+$$
+0.52 + 0.128 = 0.648
+$$
+**** (d) Find the density of $X$.
+
+Is the marginal density $f_X(x)$ of $X$ in the event space of $A$:
+
+$$
+\int_{(x, y) \in E} f(x, y)\, dy
+$$
+
+For the specific region where $0 < y < x < 1$, the marginal density $f_X(x)$ is defined as:
+$$f_X(x) = \int_{0}^{x} f(x, y) \, dy, \quad 0 < x < 1$$
+Evaluate and simplify:
+
+$$
+\int_{0}^{x} 6(x-y) \, dy
+$$
+
+$$
+\left[6xy - 6 \frac{y^2}{2}\right]_{0}^{x} = \left[6xy - 3 y^2\right]_{0}^{x} =
+6xx - 3 x^2 = 3x^{2}
+$$
+**** (e) Are $X$ and $Y$ independent?
+
+No, $X$ and $Y$ independent are not independent, as the values of $Y$ is
+constrained by the values of $X$ by $0 < y < x < 1$.
+
+Because the support of the joint density is a triangle ($0 < y < x < 1$) rather than a rectangle, the possible values for $Y$ are restricted by the specific value of $X$ [17.2]. For $X$ and $Y$ to be independent, the joint density must be the product of the marginal densities ($f(x,y) = f_X(x)f_Y(y)$), and the support must be a rectangle with sides parallel to the axes [17.2].
+
+Besides, by the marginal density function of $f_{Y}(y)$
+
+$$
+f_{Y}(y) = \int_{y}^{1} 6(x-y)\, dx = \left[3x^2 - 6yx\right]_{x=y}^1 =
+(3 - 6y) - (3y^2 - 6yy)=3y^2 -6y + 3 = 3(y^2 - 2y + 1) = 3(y-1)^2
+$$
+
+$$
+f_X(x)f_Y(y) = [3x^{2}][3(y-1)^2] = [3x(y-1)]^2 \ne 6(x-y)
+$$
+where $f(x, y) = 6(x-y)$
+**** (f) Find $E(XY)$.
+Your derivation is **entirely correct**.
+
+
+### Calculation Recap:
+1.  Integrand: $6xy(x-y) = 6x^2y - 6xy^2$.
+2.  Inner Integral (fixed $x$): $\int_{0}^{x} (6x^2y - 6xy^2) \, dy = [3x^2y^2 - 2xy^3]_{0}^{x} = x^4$.
+3.  Outer Integral: $\int_{0}^{1} x^4 \, dx = \left[ \frac{x^5}{5} \right]_{0}^{1} = \mathbf{\frac{1}{5}}$.
+
+Detailed derivations
+
+$g(x, y) = xy$
+$$
+E(XY) = \int_{0}^{1} \int_{0}^{x} 6xy (x - y)\, dy \, dx
+$$
+
+$g(x,y)f(x,y)=6x^2y - 6xy^2 = 6x(xy - y^2)$
+
+$x$ being consttant with integral with respect to $y$
+$$
+6x\int_{0}^{x} (xy - y^2)\, dy =
+6x\left[x \frac{1}{2}y^2 - \frac{1}{3}y^3 \right]_{y=0}^x =
+6x [\frac{x^3}{2} - \frac{x^3}{3}]=
+x^4
+$$
+
+$$
+E(XY) = \int_{0}^{1} x^4 \, dx = \left[\frac{x^5}{5} \right]_{x=0}^1 = \frac{1}{5}
+$$
+
+
+*** JD: 3. Let $X$ and $Y$ have joint density $f$ given by
+
+$$f(x, y) ~ = ~
+\begin{cases}
+\frac{40}{243}x(3-x)(x-y), ~~~~ 0 < y < x < 3 \\
+0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{otherwise.}
+\end{cases}$$
+
+Write the each of the following in terms of $f$ but do not simplify the
+expression. Integrals should not include regions where $f(x, y) = 0$.
+
+**** (a) $P(Y > 1)$
+
+$$
+P(Y > 1) = \int_{x=1}^3 \int_{y=1}^x f(x, y)\, dy\, dx
+$$
+since $0 < y < x < 3$ and $Y > 1$ thus we must have $1 < x < 3$ and $1 < y < x$
+for each given $x$
+(The region of the event is the intersection of the original support ($0 < y < x < 3$) and the new constraint ($y > 1$). This defines a smaller triangle with vertices at $(1, 1)$, $(3, 1)$, and $(3, 3)$ [17.1].
+)
+
+***** (b) the conditional density of $X$ given $Y = 1$ (please be clear about the values on which the density is positive)
+
+Refresh:
+$$
+P(A|B) = \frac{P(AB)}{P(B)}
+$$
+
+The same way for the density function:
+
+$$
+f_{X|Y=1}(x) = \frac{f(x, 1)}{f_Y(y=1)}
+$$
+
+$$
+f_Y(y) = \int_{x=y}^{3}f(x,y)\, dx
+$$
+
+The following is from Notebookllm
+$$
+f_Y(y=1) = \left[\int_{x=1}^{3}f(x,1)\, dx\right]
+$$
+for $y=1$
+
+I'm not sure of the above. Why it is not the following:
+(First compute the marginal of $y$, then apply $y=1$)
+
+$$
+f_Y(y=1) = \left[\int_{x=y}^{3}f(x,y)\, dx\right] (y=1)
+$$
+maybe, they are the same?
+
+therefore
+$$
+f_{X|Y=1}(x) = \frac{f(x, 1)}{\left[\int_{x=1}^{3}f(x,1)\, dx\right]}
+$$
+
+
+**** (c) $E(e^{XY})$
+$g(x, y) = e^{XY}$
+
+$$
+E(e^{XY})= \int_{x=0}^3 \int_{y=0}^{x} e^{XY} f(x, y)\, dy\, dx
+$$
+
+*** JD: 4. The joint density of $X$ and $Y$ is
+
+$$f(x, y) ~ = ~
+\begin{cases}
+24xy, ~~~ x, y > 0  \text{ and } 0 < x+y < 1 \\
+0 ~~~~~~~~~~~~~ \text{otherwise.}
+\end{cases}$$
+
+**** (a) Find the density of $X$. Recognize this as one of the famous ones and state its name and parameters.
+***** The support for the joint density is a **triangle** in the first quadrant bounded by the axes ($x=0, y=0$) and the line $y = 1 - x$ [17.1].
+
+Just a small correction to your coordinates:
+ *   For $x=0$, $y=1$, so point A is **$(0, 1)$**.
+ *   For $y=0$, $x=1$, so point B is **$(1, 0)$**.
+
+The vertices of your region are $(0, 0)$, $(1, 0)$, and $(0, 1)$ [17.1].
+
+More detailed thought process:
+First need to understand the region of the constraints for the non-zero values.
+1. $x, y > 0$, the region is in the first quardron
+2. $0 < x+y < 1$
+   The only meaningful boundary is defined by $x + y = 1$, as the other half of the
+   condition $ x + y = 0 $ degenerates to both $x=0$ and $y=0$
+   The boundary is a line, as it's a linear equation.
+   Given a line, finding two points on the will tell how the line looks.
+   Rearrange $y=-x + 1$ for the form of $ax+b$, the line's slope $a$ is $-1$,
+   and for $x=0 \Rightarrow y = 1$ thus point A $(0, 1)$ is on the line, and
+   for $y=0  \Rightarrow x = 1$, thus point B $(1, 0)$ is on the line.
+   In the coordinates, then we can draw the line from A to B.
+   With the visual, we call tell that the region is the triangle underneath and
+   to the left of the line.
+***** Density of $X$
+Integrate over all possible $Y$ subject to the constraints with respect ot $X$:
+$$
+f_X(x) = \int_{y=0}^{-x+1} 24xy \, dy = \left[ 24x \frac{y^2}{2}
+\right]_{y=0}^{-x+1} = 12x (1-x)^{2}
+$$
+for $0 < x < 1$ this is Beta Distribution
+- $r =2$, $s=3$
+
+**** (b) Without further calculation, find the density of $Y$ and justify your answer.
+From the above formula, swapping $x$ to $y$:
+$$
+f_Y(y) = \int_{x=0}^{-y+1} 24xy \, dx = \left[ 24y \frac{x^2}{2}
+\right]_{x=0}^{-y+1} = 12y (1-y)^{2}
+$$
+for $0 < x < 1$ this is Beta Distribution
+- $r =2$, $s=3$
+
+because $f(x,y)$ and the contraints are all symetry between $x$ and $y$, thus
+the same logic applies to both $x$ and $y$.
+
+**** (c) Are $X$ and $Y$ independent? Why or why not?
+
+No, they are not, since once the value of $X$ is determined, the range of $Y$ is
+constrained in the region at at the particular point of $X$ value. Vice versa
+for $Y$ to $X$.
+
+More details:
+
+Because the support of the joint density is a triangle rather than a rectangle, the range of possible values for $Y$ depends on the specific value of $X$ [12 (17.2)]. Specifically, for any given $x$, $Y$ is restricted to the interval $(0, 1-x)$ [12 (17.1)]. Since the possible values of one variable change based on the other, they cannot be independent [12 (17.2)].
+
+**** (d) Find the conditional density of $X$ given $Y = 0.75$. As always, start with the possible values.
+
+$$
+f_{X|Y=0.75}(x) = \frac{f(x, 0.75)}{f_Y}(0.75)= \frac{24x \cdot 0.75}{12 \cdot
+0.75 (1-0.75)^2} = 2 \cdot \frac{1}{0.25^2}x = 2 \cdot
+\frac{1}{\left(\frac{1}{4}\right)^2}x = 2 \cdot 16 x = 32x
+$$
+for $0 < x < 1- 0.75 $
+
+The key justification, I'm using the above calculated $f_{Y}(y)$ with $y=0.75$ substituting.
+
+**** (e) Find $P(X > 0.2 \mid Y = 0.75)$.
+With the above calculated $f_X(X \mid Y=0.75)$ and the applicable range, $P(X >
+0.2 \mid Y = 0.75)$ is the integral in the range projected in the applicable range:
+$$
+P(X > 0.2 \mid Y = 0.75) = \int_{0.2}^{0.25} 32x \, dx =
+32 \left[\frac{x^2}{2}\right]_{0.2}^{0.25} = 16 (0.25^2 - 0.2^2) = 16 (0.25 -
+0.2)(0.25 + 0.2) = 16 \cdot 0.05 \cdot 0.45=
+16 \cdot \frac{5}{100} \frac{45}{100}=
+4 \frac{5}{25} \frac{9}{20} =
+4 \frac{1 \cdot 9}{5 \cdot 20}=
+1 \frac{9}{5 \cdot 5}=
+\frac{9}{25}=\frac{36}{100}=0.36
+$$
+
+**** (f) Find $E(X \mid Y = 0.75)$.
+
+Using the same scheme as in (e) with $g(x, y) = x$
+$$
+E(X \mid Y = 0.75) = \int_{0}^{0.25} x \cdot 32x \, dx
+32 \left[\frac{x^3}{3}\right]_{0}^{0.25}=
+\frac{32}{3} \cdot 0.25^3 =
+\frac{32}{3 \cdot 4^3} = \frac{2}{3 \cdot 4}=
+\frac{1}{6}  \approx 0.167
+$$
+*** **5.** Let $U_i$, $1 \le i \le 20$ be i.i.d. uniform $(0, 1)$ variables, and let $U_{(k)}$ be the $k$th order statistic.
+
+(a) What is the density of $U_{(7)}$?
+
+(b) Without integrating the density, find the cdf of $U_{(7)}$.
+
+[Draw a line representing the unit interval and put down crosses representing the variables. For $U_{(7)}$ to be less than $x$, how must you distribute the crosses?]
+
+(c) Find the joint density of $U_{(7)}$ and $U_{(12)}$.
+
+entered on: 2026-05-10 19:14:19
+*** **6.** A random variable $X$ has the beta $(2, 2)$ density. Given $X = x$, the conditional distribution of the random variable $Y$ is uniform on the interval $(-x, x)$.
+
+(a) Find $P(Y < 0.2 \mid X = 0.6)$.
+
+(b) Find $E(Y)$.
+
+(c) Find the joint density of $X$ and $Y$. Remember to specify the
+region where it is positive.
+
+(d) Find $P(X < 0.3, \vert Y \vert < 0.3X)$.
+entered on: 2026-05-10 19:14:53
+*** **7.** Let $X$ and $Y$ be i.i.d. with a joint density.
+
+(a) Find $P(Y > X)$.
+
+(b) Find $P(\vert Y \vert > \vert X \vert)$.
+
+(c) If $X$ and $Y$ are i.i.d. standard normal, find $P(Y > \vert X \vert)$.
+entered on: 2026-05-10 19:14:56
+*** **8.** Two points are placed independently and uniformly at random on the unit interval. This creates three segments of the interval. What is the chance that the three segments can form a triangle?
+
+[To find probabilities of events determined by two independent uniform $(0,1)$ random variables, it’s a good idea to draw the unit square.]
+entered on: 2026-05-10 19:15:16
+
+
 * Foundational Probability Calculations
 ** Start from definitions
 Perform reasoning and calculation definitions.
@@ -784,7 +1284,6 @@ $k$ permutations and $(n-k)$ permutations.
 ** Linear algebra
 ** Combinatory
 ** Trigonometry
-
 * If $\lambda$ is not an integer, the mode of a Poisson distribution is the **floor** (the "bottom") of $\lambda$, denoted as $\lfloor \lambda \rfloor$.
 
 ### **Why?**

@@ -629,11 +629,14 @@ does not for more than one dimension.
 
 ** Sample of problem solving with joint densities (exercises)
 {{{mn(Keys for joint distribution exercises:)}}}
-{{{mn(Clarify on the region of the event of $X\, Y$)}}}
-{{{mn(Typcially a triangle underneath a straight line)}}}
-{{{mn(Note: two typical points of $x=0$ and $y=0$ can determine the line)}}}
-{{{mn(When performing integrals the bounds must obey the region boundaries.)}}}
-{{{mn(for marginal density\, also the boundaries apply in the integral and the
+{{{mn(1. Clarify on the region of the event of $X\, Y$)}}}
+{{{mn(2. The boundaries are definied by the equations (the limits) by replacing
+the inequality relationships by equality relationships from the
+inqualities defining the joint distribution's non-zero probabilities)}}}
+{{{mn(3. Typcially a triangle underneath a straight line)}}}
+{{{mn(4. two typical points of $x=0$ and $y=0$ can determine the line)}}}
+{{{mn(5. When performing integrals the bounds must obey the region boundaries.)}}}
+{{{mn(6. for marginal density\, also the boundaries apply in the integral and the
 applicable region of the marginal density)}}}
 *** The probability of students being late to lecture
 A Prob 140 student comes to lecture at a time that is uniformly distributed between 5:09 and 5:14. Independently of the student, the professor begins the lecture at a time that is uniformly distributed between 5:10 and 5:12. What is the chance that the lecture has already begun when the student arrives?
